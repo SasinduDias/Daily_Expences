@@ -6,7 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class AddNewExpences extends StatefulWidget {
-  const AddNewExpences({super.key});
+  final void Function(expence.ExpenceModel expenceModel) onAddExpence;
+  const AddNewExpences({super.key, required this.onAddExpence});
 
   @override
   State<AddNewExpences> createState() => _AddNewExpencesState();
@@ -28,28 +29,16 @@ class _AddNewExpencesState extends State<AddNewExpences> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Basic dialog title'),
+            title: const Text('Warning'),
             content: const Text(
-              'A dialog is a type of modal window that\n'
-              'appears in front of app content to\n'
-              'provide critical information, or prompt\n'
-              'for a decision to be made.',
+              'Please enter a valid title and amount',
             ),
             actions: <Widget>[
               TextButton(
                 style: TextButton.styleFrom(
                   textStyle: Theme.of(context).textTheme.labelLarge,
                 ),
-                child: const Text('Disable'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              TextButton(
-                style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge,
-                ),
-                child: const Text('Enable'),
+                child: const Text('Ok'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -58,6 +47,38 @@ class _AddNewExpencesState extends State<AddNewExpences> {
           );
         },
       );
+    } else if (double.parse(amount) <= 0) {
+      showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Invalid Amount'),
+            content: const Text(
+              'Please enter a valid amount',
+            ),
+            actions: <Widget>[
+              TextButton(
+                style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge,
+                ),
+                child: const Text('Ok'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      final expenceModel = expence.ExpenceModel(
+        title: title,
+        amount: double.parse(amount),
+        date: _selectedDate,
+        category: _selectedCategory,
+      );
+      widget.onAddExpence(expenceModel);
+      Navigator.pop(context);
     }
   }
 
